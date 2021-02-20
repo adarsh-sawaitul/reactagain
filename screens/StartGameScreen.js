@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Dimensions
 } from 'react-native';
 
 import Card from '../components/Card';
@@ -15,6 +18,7 @@ import NumberContainer from '../components/NumberContainer';
 import BodyText from '../components/BodyText';
 import Input from '../components/Input';
 import TitleText from '../components/TitleText';
+import MainButton from '../components/MainButton';
 
 
 const StartGameScreen = (props) => {
@@ -31,6 +35,18 @@ const StartGameScreen = (props) => {
     setEnteredValue('');
     setConfirmed(false);
   };
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setButtonWidth(Dimensions.get('window').width / 4);
+    };
+  
+    Dimensions.addEventListener('change', updateLayout);
+    return () => {
+      Dimensions.removeEventListener('change', updateLayout);
+    };
+  });
+
 
   const confirmInputHandler = () => {
     const chosenNumber = parseInt(enteredValue);
@@ -61,12 +77,16 @@ const StartGameScreen = (props) => {
       <Card style={styles.summaryContainer}>
         <BodyText> You selected </BodyText>
         <NumberContainer>{selectedNumber}</NumberContainer>
-        <Button title=" START GAME" onPress={() => props.onStartGame(selectedNumber)} /> 
+        <MainButton  onPress={() => props.onStartGame(selectedNumber)} > 
+          START GAME
+        </MainButton>
       </Card>
     );
   }
 
   return (
+    <ScrollView>
+    <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={30}>
     <TouchableWithoutFeedback
       onPress={() => {
         // if user touches anywhere on  the screen the keyboard dissapearss
@@ -105,11 +125,14 @@ const StartGameScreen = (props) => {
             </View>
           </View>
         </Card>
+        
   
         {confirmedOutput}
 
       </View>
     </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
